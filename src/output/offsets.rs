@@ -15,7 +15,7 @@ impl CodeWriter for OffsetMap {
                     false,
                     |fmt| {
                         for (name, value) in offsets {
-                            writeln!(fmt, "public const nint {} = {:#X};", name, value)?;
+                            writeln!(fmt, "public const nint {} = {:#X};{}", name, value, comment(name))?;
                         }
 
                         Ok(())
@@ -42,7 +42,7 @@ impl CodeWriter for OffsetMap {
                         false,
                         |fmt| {
                             for (name, value) in offsets {
-                                writeln!(fmt, "constexpr std::ptrdiff_t {} = {:#X};", name, value)?;
+                                writeln!(fmt, "constexpr std::ptrdiff_t {} = {:#X};{}", name, value, comment(name))?;
                             }
 
                             Ok(())
@@ -72,7 +72,7 @@ impl CodeWriter for OffsetMap {
                         false,
                         |fmt| {
                             for (name, value) in offsets {
-                                writeln!(fmt, "pub const {}: usize = {:#X};", name, value)?;
+                                writeln!(fmt, "pub const {}: usize = {:#X};{}", name, value, comment(name))?;
                             }
 
                             Ok(())
@@ -100,9 +100,10 @@ impl CodeWriter for OffsetMap {
                             for (name, value) in offsets {
                                 writeln!(
                                     fmt,
-                                    "pub const {}: usize = {:#X};",
+                                    "pub const {}: usize = {:#X};{}",
                                     zig_ident(name),
-                                    value
+                                    value,
+                                    comment(name)
                                 )?;
                             }
 
@@ -114,5 +115,13 @@ impl CodeWriter for OffsetMap {
                 Ok(())
             })
         })
+    }
+}
+
+fn comment(name: &str) -> &'static str {
+    if name == "dwSvCheats" {
+        " // sv_cheats ConVar"
+    } else {
+        ""
     }
 }
